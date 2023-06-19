@@ -1,6 +1,7 @@
 pub const HIRO_MAINNET_DEFAULT: &str = "https://stacks-node-api.mainnet.stacks.co";
 pub const HIRO_TESTNET_DEFAULT: &str = "https://stacks-node-api.testnet.stacks.co";
 pub const HIRO_MOCKNET_DEFAULT: &str = "http://localhost:3999";
+use pyo3::pyclass;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -73,6 +74,7 @@ impl Network for StacksMainnet {
 }
 
 /// The testnet network.
+#[cfg_attr(feature = "python", pyclass)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct StacksTestnet {
     version: TransactionVersion,

@@ -6,6 +6,10 @@ use crate::clarity::CLARITY_TYPE_PRINCIPAL_STANDARD;
 use crate::crypto::Serialize;
 use crate::transaction::Error;
 
+#[cfg(feature = "python")]
+use pyo3::prelude::*;
+
+#[cfg_attr(feature = "python", pyclass)]
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AnchorMode {
@@ -14,6 +18,7 @@ pub enum AnchorMode {
     Any = 0x03,
 }
 
+#[cfg_attr(feature = "python", pyclass)]
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum PostConditionMode {
@@ -113,11 +118,12 @@ impl Serialize for AssetInfo {
     }
 }
 
+#[cfg_attr(feature = "python", pyclass)]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum PostCondition {
-    Stx(STXPostCondition),
-    Fungible(FungiblePostCondition),
-    NonFungible(NonFungiblePostCondition),
+    Stx,
+    Fungible,
+    NonFungible,
 }
 
 impl Serialize for PostCondition {
@@ -125,21 +131,26 @@ impl Serialize for PostCondition {
 
     fn serialize(&self) -> Result<Vec<u8>, Self::Err> {
         match self {
-            PostCondition::Stx(cond) => cond.serialize(),
-            PostCondition::Fungible(cond) => cond.serialize(),
-            PostCondition::NonFungible(cond) => cond.serialize(),
+            PostCondition::Stx => PostCondition::Stx.serialize(),
+            PostCondition::Fungible => PostCondition::Fungible.serialize(),
+            PostCondition::NonFungible => PostCondition::NonFungible.serialize(),
         }
     }
 }
 
+#[pyclass]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct PostConditions(Vec<PostCondition>);
 
+#[pymethods]
 impl PostConditions {
-    pub fn new(values: impl Into<Vec<PostCondition>>) -> Self {
+    #[new]
+    #[args(values="Vec::new()")]
+    pub fn new(values: Vec<PostCondition>) -> Self {
         PostConditions(values.into())
     }
 
+    #[staticmethod]
     pub fn empty() -> Self {
         PostConditions(vec![])
     }
@@ -177,7 +188,7 @@ impl STXPostCondition {
             condition_code,
         };
 
-        PostCondition::Stx(condition)
+        PostCondition::Stx
     }
 }
 
@@ -227,7 +238,7 @@ impl FungiblePostCondition {
             condition_code,
         };
 
-        PostCondition::Fungible(condition)
+        PostCondition::Fungible
     }
 }
 
@@ -278,7 +289,7 @@ impl NonFungiblePostCondition {
             condition_code,
         };
 
-        PostCondition::NonFungible(condition)
+        PostCondition::NonFungible
     }
 }
 

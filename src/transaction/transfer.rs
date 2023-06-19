@@ -15,13 +15,17 @@ use crate::Network;
 use crate::StacksPrivateKey;
 use crate::StacksPublicKey;
 
+#[cfg(feature = "python")]
+use pyo3::prelude::*;
+
 /// A single-sig STX token transfer builder.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "python", pyclass)]
 pub struct STXTokenTransfer {
     /// The underlying stacks transaction.
-    transaction: StacksTransaction,
+    pub transaction: StacksTransaction,
     /// The private key of the signer.
-    sender_key: StacksPrivateKey,
+    pub sender_key: StacksPrivateKey,
 }
 
 impl STXTokenTransfer {

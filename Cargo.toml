@@ -29,6 +29,15 @@ features = ["derive"]
 [dev-dependencies]
 rand = "0.8.5"
 
+[dependencies.pyo3]
+version = "0.18.3"
+optional = true
+features = ["extension-module"]
+
+[features]
+default = []
+python = ["pyo3"]
+
 [workspace]
 members = [
     "./",
